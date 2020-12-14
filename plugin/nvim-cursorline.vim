@@ -6,8 +6,8 @@ let g:loaded_cursorword = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-lua require'nvim-cursorline'.cursormoved()
-lua require'nvim-cursorline'.highlight()
+autocmd VimEnter * call luaeval("require'nvim-cursorline'.highlight()")
+autocmd CursorMoved,CursorMovedI * call luaeval("require'nvim-cursorline'.cursormoved()")
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
