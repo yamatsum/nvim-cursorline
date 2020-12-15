@@ -3,10 +3,20 @@ local M = {}
 local disabled = 0
 local cursor = 1
 local window = 2
-local status = disabled
+local status = cursor
 local timer = vim.loop.new_timer()
 
-function M.highlight()
+vim.wo.cursorline = true
+
+function return_highlight_term(group, term)
+	local output = vim.api.nvim_exec('highlight ' .. group, true)
+	return vim.fn.matchstr(output, term .. [[=\zs\S*]])
+end
+
+local normal_bg = return_highlight_term('Normal', 'guibg')
+local cursorline_bg = return_highlight_term('CursorLine', 'guibg')
+
+function M.highlight_cursorword()
   vim.cmd('highlight CursorWord term=underline cterm=underline gui=underline')
 end
 
@@ -33,7 +43,9 @@ function M.cursor_moved()
 	end
 	M.timer_start()
 	if status == cursor then
-		vim.wo.cursorline = false
+		-- vim.wo.cursorline = false
+		vim.cmd('highlight! CursorLine guibg=' .. normal_bg)
+		vim.cmd('highlight! CursorLineNr guibg=' .. normal_bg)
 		status = disabled
 	end
 end
@@ -50,7 +62,9 @@ end
 
 function M.timer_start()
 	timer:start(1000, 0, vim.schedule_wrap(function()
-		vim.wo.cursorline = true
+		-- vim.wo.cursorline = true
+		vim.cmd('highlight! CursorLine guibg=' .. cursorline_bg)
+		vim.cmd('highlight! CursorLineNr guibg=' .. cursorline_bg)
 		status = cursor
 	end))
 end
