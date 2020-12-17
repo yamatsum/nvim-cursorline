@@ -31,7 +31,7 @@ function M.matchadd()
   vim.w.cursorword_match = 0
   if cursorword == '' or #cursorword > 100 then return end
   local pattern = [[\<]] .. cursorword .. [[\>]] 
-  vim.w.cursorword_id = vim.fn.matchadd('CursorWord', pattern)
+  vim.w.cursorword_id = vim.fn.matchadd('CursorWord', pattern, -1)
   vim.w.cursorword_match = 1
 end
 
