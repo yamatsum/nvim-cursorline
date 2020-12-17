@@ -17,26 +17,26 @@ local normal_bg = return_highlight_term('Normal', 'guibg')
 local cursorline_bg = return_highlight_term('CursorLine', 'guibg')
 
 function M.highlight_cursorword()
-  vim.cmd('highlight CursorWord term=underline cterm=underline gui=underline')
+	vim.cmd('highlight CursorWord term=underline cterm=underline gui=underline')
 end
 
 function M.matchadd()
-  local column = vim.api.nvim_win_get_cursor(0)[2]
-  local line = vim.api.nvim_get_current_line()
-  local cursorword = vim.fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. vim.fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
+	local column = vim.api.nvim_win_get_cursor(0)[2]
+	local line = vim.api.nvim_get_current_line()
+	local cursorword = vim.fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. vim.fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
-  if cursorword == vim.w.cursorword then return end
-  vim.w.cursorword = cursorword
-  if vim.w.cursorword_match == 1 then vim.call('matchdelete', vim.w.cursorword_id) end
-  vim.w.cursorword_match = 0
-  if cursorword == '' or #cursorword > 100 then return end
-  local pattern = [[\<]] .. cursorword .. [[\>]] 
-  vim.w.cursorword_id = vim.fn.matchadd('CursorWord', pattern, -1)
-  vim.w.cursorword_match = 1
+	if cursorword == vim.w.cursorword then return end
+	vim.w.cursorword = cursorword
+	if vim.w.cursorword_match == 1 then vim.call('matchdelete', vim.w.cursorword_id) end
+	vim.w.cursorword_match = 0
+	if cursorword == '' or #cursorword > 100 then return end
+	local pattern = [[\<]] .. cursorword .. [[\>]] 
+	vim.w.cursorword_id = vim.fn.matchadd('CursorWord', pattern, -1)
+	vim.w.cursorword_match = 1
 end
 
 function M.cursor_moved()
-  M.matchadd()
+	M.matchadd()
 	if status == window then
 		status = cursor
 		return
@@ -51,13 +51,13 @@ function M.cursor_moved()
 end
 
 function M.win_enter()
-		vim.wo.cursorline = true
-		status = window
+	vim.wo.cursorline = true
+	status = window
 end
 
 function M.win_leave()
-		vim.wo.cursorline = false
-		status = window
+	vim.wo.cursorline = false
+	status = window
 end
 
 function M.timer_start()
