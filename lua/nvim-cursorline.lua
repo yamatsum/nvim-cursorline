@@ -21,6 +21,7 @@ function M.highlight_cursorword()
 end
 
 function M.matchadd()
+	if vim.fn.hlexists('CursorWord') == 0 then return end
 	local column = vim.api.nvim_win_get_cursor(0)[2]
 	local line = vim.api.nvim_get_current_line()
 	local cursorword = vim.fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. vim.fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
@@ -62,11 +63,11 @@ end
 
 function M.timer_start()
 	timer:start(1000, 0, vim.schedule_wrap(function()
-		-- vim.wo.cursorline = true
-		vim.cmd('highlight! CursorLine guibg=' .. cursorline_bg)
-		vim.cmd('highlight! CursorLineNr guibg=' .. cursorline_bg)
-		status = cursor
-	end))
+				-- vim.wo.cursorline = true
+				vim.cmd('highlight! CursorLine guibg=' .. cursorline_bg)
+				vim.cmd('highlight! CursorLineNr guibg=' .. cursorline_bg)
+				status = cursor
+			end))
 end
 
 return M
