@@ -17,7 +17,9 @@ local normal_bg = return_highlight_term("Normal", "guibg")
 local cursorline_bg = return_highlight_term("CursorLine", "guibg")
 
 function M.highlight_cursorword()
-  vim.cmd("highlight CursorWord term=underline cterm=underline gui=underline")
+  if vim.g.cursorword_highlight ~= false then
+    vim.cmd('highlight CursorWord term=underline cterm=underline gui=underline')
+  end
 end
 
 function M.matchadd()

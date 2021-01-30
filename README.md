@@ -10,6 +10,9 @@ Highlight words and lines on the cursor for Neovim
 ## Installation
 Install with your favorite plugin manager.
 
+## Highlighting
+You can override cursor highlighting by defining `CursorWord` group and disabling built-in highlighting by specifying `vim.g.cursorword_highlight` (lua) or `g:cursorword_highlight` (vimscript).
+
 ## Acknowledgments
 Thanks goes to these people/projects for inspiration:
 
