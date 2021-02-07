@@ -45,6 +45,9 @@ function M.cursor_moved()
 	M.timer_start()
 	if status == cursor then
 		-- vim.wo.cursorline = false
+    if normal_bg == '' then
+      normal_bg='NONE'
+    end
 		vim.cmd('highlight! CursorLine guibg=' .. normal_bg)
 		vim.cmd('highlight! CursorLineNr guibg=' .. normal_bg)
 		status = disabled
