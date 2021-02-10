@@ -37,7 +37,7 @@ function M.matchadd()
     vim.call("matchdelete", vim.w.cursorword_id)
   end
   vim.w.cursorword_match = 0
-  if cursorword == "" or #cursorword > 100 then
+  if cursorword == "" or #cursorword > 100 or #cursorword < 3 or string.find(cursorword, "[\192-\255]+") ~= nil then
     return
   end
   local pattern = [[\<]] .. cursorword .. [[\>]]
