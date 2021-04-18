@@ -6,6 +6,14 @@ local window = 2
 local status = cursor
 local timer = vim.loop.new_timer()
 
+local toggle_cursorline_bg
+
+if vim.g.cursorword_toggle_cursorline_bg == nil then
+    toggle_cursorline_bg = true
+else
+    toggle_cursorline_bg = vim.g.cursorword_toggle_cursorline_bg
+end
+
 vim.wo.cursorline = true
 
 local function return_highlight_term(group, term)
@@ -53,14 +61,17 @@ function M.cursor_moved()
     status = cursor
     return
   end
-  M.timer_start()
-  if status == cursor then
-    -- vim.wo.cursorline = false
-    vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
-    vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
-    status = disabled
+
+  if toggle_cursorline_bg then
+    M.timer_start()
+    if status == cursor then
+      -- vim.wo.cursorline = false
+      vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
+      vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
+      status = disabled
+    end
   end
-end
+ end
 
 function M.win_enter()
   vim.wo.cursorline = true
