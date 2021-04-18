@@ -10,8 +10,14 @@ Highlight words and lines on the cursor for Neovim
 ## Installation
 Install with your favorite plugin manager.
 
-## Highlighting
+## Configuration
+
+### Highlighting
 You can override cursor highlighting by defining `CursorWord` group and disabling built-in highlighting by specifying `vim.g.cursorword_highlight` (lua) or `g:cursorword_highlight` (vimscript).
+
+### Cursorline background toggle
+After moving the cursor the cursorline background is hidden for 1000 ms.
+This can be disabled by setting `vim.g.cursorword_toggle_cursorline_bg = false`.
 
 ## Acknowledgments
 Thanks goes to these people/projects for inspiration:
