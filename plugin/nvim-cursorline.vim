@@ -6,10 +6,10 @@ let g:loaded_cursorword = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-autocmd VimEnter * call luaeval("require'nvim-cursorline'.highlight_cursorword()")
-autocmd CursorMoved,CursorMovedI * call luaeval("require'nvim-cursorline'.cursor_moved()")
-autocmd WinEnter * call luaeval("require'nvim-cursorline'.win_enter()")
-autocmd WinLeave * call luaeval("require'nvim-cursorline'.win_leave()")
+if get(g:, 'cursorword_highlight', v:true)
+  autocmd VimEnter * call luaeval("require'nvim-cursorline'.highlight_cursorword()")
+endif
+autocmd CursorMoved,CursorMovedI * call luaeval("require'nvim-cursorline'.matchadd()")
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
