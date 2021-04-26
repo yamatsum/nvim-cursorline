@@ -13,6 +13,8 @@ Install with your favorite plugin manager.
 ## Highlighting
 You can override cursor highlighting by defining `CursorWord` group and disabling built-in highlighting by specifying `vim.g.cursorword_highlight` (lua) or `g:cursorword_highlight` (vimscript).
 
+To lower the time it takes to make the cursorline appear, set `vim.g.cursorword_cursorline_timeout` (lua) or `g:cursorword_cursorline_timeout` (vimscript), where `1000` is the default value in milliseconds.
+
 ## Acknowledgments
 Thanks goes to these people/projects for inspiration:
 

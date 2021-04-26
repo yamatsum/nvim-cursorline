@@ -6,6 +6,8 @@ local window = 2
 local status = cursor
 local timer = vim.loop.new_timer()
 
+local cursorline_timeout = vim.g.cursorword_cursorline_timeout and vim.g.cursorword_cursorline_timeout or 1000
+
 vim.wo.cursorline = true
 
 local function return_highlight_term(group, term)
@@ -74,7 +76,7 @@ end
 
 function M.timer_start()
   timer:start(
-    1000,
+    cursorline_timeout,
     0,
     vim.schedule_wrap(
       function()
