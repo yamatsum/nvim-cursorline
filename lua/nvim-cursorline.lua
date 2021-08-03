@@ -8,7 +8,7 @@ local timer = vim.loop.new_timer()
 
 local cursorline_timeout = vim.g.cursorword_cursorline_timeout and vim.g.cursorword_cursorline_timeout or 1000
 
-vim.wo.cursorline = true
+vim.o.cursorline = true
 
 local function return_highlight_term(group, term)
   local output = vim.api.nvim_exec("highlight " .. group, true)
@@ -65,12 +65,12 @@ function M.cursor_moved()
 end
 
 function M.win_enter()
-  vim.wo.cursorline = true
+  vim.o.cursorline = true
   status = window
 end
 
 function M.win_leave()
-  vim.wo.cursorline = false
+  vim.o.cursorline = false
   status = window
 end
 
