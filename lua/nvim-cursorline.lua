@@ -6,7 +6,6 @@ local window = 2
 local status = cursor
 local timer = vim.loop.new_timer()
 
-local cursorline_timeout = vim.g.cursorword_cursorline_timeout and vim.g.cursorword_cursorline_timeout or 1000
 
 vim.o.cursorline = true
 
