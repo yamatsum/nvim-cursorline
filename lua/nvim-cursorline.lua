@@ -1,13 +1,20 @@
 local M = {}
 
-local disabled = 0
-local cursor = 1
-local window = 2
-local status = cursor
+local DISABLED = 0
+local CURSOR = 1
+local WINDOW = 2
+local status = CURSOR
 local timer = vim.loop.new_timer()
 
+local w = vim.w
+local o = vim.o
+local g = vim.g
+local fn = vim.fn
+local api = vim.api
 
-vim.o.cursorline = true
+local cursorline_timeout = g.cursorline_timeout and g.cursorline_timeout or 1000
+
+o.cursorline = true
 
 local function return_highlight_term(group, term)
   local output = vim.api.nvim_exec("highlight " .. group, true)
@@ -18,59 +25,58 @@ local normal_bg = return_highlight_term("Normal", "guibg")
 local cursorline_bg = return_highlight_term("CursorLine", "guibg")
 
 function M.highlight_cursorword()
-  if vim.g.cursorword_highlight ~= false then
-    vim.cmd('highlight CursorWord term=underline cterm=underline gui=underline')
+  if g.cursorword_highlight ~= false then
+    vim.cmd("highlight CursorWord term=underline cterm=underline gui=underline")
   end
 end
 
 function M.matchadd()
-  if vim.fn.hlexists("CursorWord") == 0 then
+  if fn.hlexists("CursorWord") == 0 then
     return
   end
-  local column = vim.api.nvim_win_get_cursor(0)[2]
-  local line = vim.api.nvim_get_current_line()
+  local column = api.nvim_win_get_cursor(0)[2]
+  local line = api.nvim_get_current_line()
   local cursorword =
-    vim.fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. vim.fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
+    fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
-  if cursorword == vim.w.cursorword then
+  if cursorword == w.cursorword then
     return
   end
-  vim.w.cursorword = cursorword
-  if vim.w.cursorword_match == 1 then
-    vim.call("matchdelete", vim.w.cursorword_id)
+  w.cursorword = cursorword
+  if w.cursorword_match == 1 then
+    vim.call("matchdelete", w.cursorword_id)
   end
-  vim.w.cursorword_match = 0
+  w.cursorword_match = 0
   if cursorword == "" or #cursorword > 100 or #cursorword < 3 or string.find(cursorword, "[\192-\255]+") ~= nil then
     return
   end
   local pattern = [[\<]] .. cursorword .. [[\>]]
-  vim.w.cursorword_id = vim.fn.matchadd("CursorWord", pattern, -1)
-  vim.w.cursorword_match = 1
+  w.cursorword_id = fn.matchadd("CursorWord", pattern, -1)
+  w.cursorword_match = 1
 end
 
 function M.cursor_moved()
   M.matchadd()
-  if status == window then
-    status = cursor
+  if status == WINDOW then
+    status = CURSOR
     return
   end
   M.timer_start()
-  if status == cursor then
-    -- vim.wo.cursorline = false
+  if status == CURSOR then
     vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
     vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
-    status = disabled
+    status = DISABLED
   end
 end
 
 function M.win_enter()
-  vim.o.cursorline = true
-  status = window
+  o.cursorline = true
+  status = WINDOW
 end
 
 function M.win_leave()
-  vim.o.cursorline = false
-  status = window
+  o.cursorline = false
+  status = WINDOW
 end
 
 function M.timer_start()
@@ -79,10 +85,9 @@ function M.timer_start()
     0,
     vim.schedule_wrap(
       function()
-        -- vim.wo.cursorline = true
         vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
         vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
-        status = cursor
+        status = CURSOR
       end
     )
   )
