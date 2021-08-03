@@ -17,8 +17,8 @@ local cursorline_timeout = g.cursorline_timeout and g.cursorline_timeout or 1000
 o.cursorline = true
 
 local function return_highlight_term(group, term)
-  local output = vim.api.nvim_exec("highlight " .. group, true)
-  return vim.fn.matchstr(output, term .. [[=\zs\S*]])
+  local output = api.nvim_exec("highlight " .. group, true)
+  return fn.matchstr(output, term .. [[=\zs\S*]])
 end
 
 local normal_bg = return_highlight_term("Normal", "guibg")
