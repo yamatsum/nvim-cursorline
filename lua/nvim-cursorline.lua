@@ -18,7 +18,12 @@ o.cursorline = true
 
 local function return_highlight_term(group, term)
   local output = api.nvim_exec("highlight " .. group, true)
-  return fn.matchstr(output, term .. [[=\zs\S*]])
+  local hi = fn.matchstr(output, term .. [[=\zs\S*]])
+  if hi == nil or hi == '' then
+    return 'None'
+  else
+    return hi
+  end
 end
 
 local normal_bg = return_highlight_term("Normal", "guibg")
