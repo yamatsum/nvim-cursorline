@@ -13,21 +13,24 @@ local fn = vim.fn
 local api = vim.api
 
 local cursorline_timeout = g.cursorline_timeout and g.cursorline_timeout or 1000
-
+local cursorline_disabled = cursorline_timeout == 0
 o.cursorline = true
 
 local function return_highlight_term(group, term)
   local output = api.nvim_exec("highlight " .. group, true)
   local hi = fn.matchstr(output, term .. [[=\zs\S*]])
-  if hi == nil or hi == '' then
-    return 'None'
+  if hi == nil or hi == "" then
+    return "None"
   else
     return hi
   end
 end
 
-local normal_bg = return_highlight_term("Normal", "guibg")
 local cursorline_bg = return_highlight_term("CursorLine", "guibg")
+local normal_bg = cursorline_bg
+if not cursorline_disabled then
+  normal_bg = return_highlight_term("Normal", "guibg")
+end
 
 function M.highlight_cursorword()
   if g.cursorword_highlight ~= false then
@@ -41,8 +44,8 @@ function M.matchadd()
   end
   local column = api.nvim_win_get_cursor(0)[2]
   local line = api.nvim_get_current_line()
-  local cursorword =
-    fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
+  local cursorword = fn.matchstr(line:sub(1, column + 1), [[\k*$]])
+    .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
   if cursorword == w.cursorword then
     return
@@ -66,7 +69,9 @@ function M.cursor_moved()
     status = CURSOR
     return
   end
-  M.timer_start()
+  if not cursorline_disabled then
+    M.timer_start()
+  end
   if status == CURSOR then
     vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
     vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
@@ -88,13 +93,11 @@ function M.timer_start()
   timer:start(
     cursorline_timeout,
     0,
-    vim.schedule_wrap(
-      function()
-        vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
-        vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
-        status = CURSOR
-      end
-    )
+    vim.schedule_wrap(function()
+      vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
+      vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
+      status = CURSOR
+    end)
   )
 end
 
