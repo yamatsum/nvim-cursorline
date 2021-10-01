@@ -13,7 +13,7 @@ local fn = vim.fn
 local api = vim.api
 
 local cursorline_timeout = g.cursorline_timeout and g.cursorline_timeout or 1000
-local cursorline_disabled = cursorline_timeout == 0
+
 o.cursorline = true
 
 local function return_highlight_term(group, term)
@@ -26,11 +26,8 @@ local function return_highlight_term(group, term)
   end
 end
 
+local normal_bg = return_highlight_term("Normal", "guibg")
 local cursorline_bg = return_highlight_term("CursorLine", "guibg")
-local normal_bg = cursorline_bg
-if not cursorline_disabled then
-  normal_bg = return_highlight_term("Normal", "guibg")
-end
 
 function M.highlight_cursorword()
   if g.cursorword_highlight ~= false then
@@ -69,10 +66,9 @@ function M.cursor_moved()
     status = CURSOR
     return
   end
-  if not cursorline_disabled then
-    M.timer_start()
-  end
-  if status == CURSOR then
+  M.timer_start()
+  if status == CURSOR and cursorline_timeout ~= 0 then
+    -- disable cursorline
     vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
     vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
     status = DISABLED
@@ -94,6 +90,7 @@ function M.timer_start()
     cursorline_timeout,
     0,
     vim.schedule_wrap(function()
+      -- enable cursorline
       vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
       vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
       status = CURSOR
