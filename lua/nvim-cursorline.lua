@@ -19,8 +19,8 @@ o.cursorline = true
 local function return_highlight_term(group, term)
   local output = api.nvim_exec("highlight " .. group, true)
   local hi = fn.matchstr(output, term .. [[=\zs\S*]])
-  if hi == nil or hi == '' then
-    return 'None'
+  if hi == nil or hi == "" then
+    return "None"
   else
     return hi
   end
@@ -41,8 +41,8 @@ function M.matchadd()
   end
   local column = api.nvim_win_get_cursor(0)[2]
   local line = api.nvim_get_current_line()
-  local cursorword =
-    fn.matchstr(line:sub(1, column + 1), [[\k*$]]) .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
+  local cursorword = fn.matchstr(line:sub(1, column + 1), [[\k*$]])
+    .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
   if cursorword == w.cursorword then
     return
@@ -67,7 +67,8 @@ function M.cursor_moved()
     return
   end
   M.timer_start()
-  if status == CURSOR then
+  if status == CURSOR and cursorline_timeout ~= 0 then
+    -- disable cursorline
     vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
     vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
     status = DISABLED
@@ -88,13 +89,12 @@ function M.timer_start()
   timer:start(
     cursorline_timeout,
     0,
-    vim.schedule_wrap(
-      function()
-        vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
-        vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
-        status = CURSOR
-      end
-    )
+    vim.schedule_wrap(function()
+      -- enable cursorline
+      vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
+      vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
+      status = CURSOR
+    end)
   )
 end
 
