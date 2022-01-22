@@ -14,7 +14,9 @@ local api = vim.api
 
 local cursorline_timeout = g.cursorline_timeout and g.cursorline_timeout or 1000
 
-o.cursorline = true
+if g.cursorline_highlight ~= false then
+  o.cursorline = true
+end
 
 local function return_highlight_term(group, term)
   local output = api.nvim_exec("highlight " .. group, true)
@@ -28,6 +30,33 @@ end
 
 local normal_bg = return_highlight_term("Normal", "guibg")
 local cursorline_bg = return_highlight_term("CursorLine", "guibg")
+
+local function make_disabled_type_table(initial)
+  if type(initial) == "nil" then
+    return {}
+  elseif type(initial) == "string" then
+    return { initial }
+  elseif type(initial) == "table" then
+    return initial
+  end
+
+  return {}
+end
+
+local cursorword_disabled_filetypes = make_disabled_type_table(g.cursorword_disabled_filetypes)
+local cursorword_disabled_buffertypes = make_disabled_type_table(g.cursorword_disabled_buffertypes)
+local cursorline_disabled_filetypes = make_disabled_type_table(g.cursorline_disabled_filetypes)
+local cursorline_disabled_buffertypes = make_disabled_type_table(g.cursorline_disabled_buffertypes)
+
+local function should_disable_cursorword_on_buffer()
+  return table.contains(cursorword_disabled_filetypes, vim.bo.filetype)
+    or table.contains(cursorword_disabled_filetypes, vim.bo.filetype)
+end
+
+local function should_disable_cursorline_on_buffer()
+  return table.contains(cursorline_disabled_filetypes, vim.bo.filetype)
+    or table.contains(cursorline_disabled_filetypes, vim.bo.filetype)
+end
 
 function M.highlight_cursorword()
   if g.cursorword_highlight ~= false then
@@ -66,12 +95,14 @@ function M.cursor_moved()
     status = CURSOR
     return
   end
-  M.timer_start()
-  if status == CURSOR and cursorline_timeout ~= 0 then
-    -- disable cursorline
-    vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
-    vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
-    status = DISABLED
+  if g.cursorline_highlight ~= false then
+    M.timer_start()
+    if status == CURSOR and cursorline_timeout ~= 0 then
+      -- disable cursorline
+      vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
+      vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
+      status = DISABLED
+    end
   end
 end
 
