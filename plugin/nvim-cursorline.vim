@@ -3,13 +3,15 @@ if exists('g:loaded_cursorword') || v:version < 703
 endif
 let g:loaded_cursorword = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpoptions = &cpoptions
+set cpoptions&vim
 
-autocmd VimEnter * call luaeval("require'nvim-cursorline'.highlight_cursorword()")
-autocmd CursorMoved,CursorMovedI * call luaeval("require'nvim-cursorline'.cursor_moved()")
-autocmd WinEnter * call luaeval("require'nvim-cursorline'.win_enter()")
-autocmd WinLeave * call luaeval("require'nvim-cursorline'.win_leave()")
+augroup cursorline
+  autocmd! VimEnter * call luaeval("require'nvim-cursorline'.vim_enter()")
+  autocmd! CursorMoved,CursorMovedI * call luaeval("require'nvim-cursorline'.cursor_moved()")
+  autocmd! BufEnter * call luaeval("require'nvim-cursorline'.buf_enter()")
+  autocmd! BufLeave * call luaeval("require'nvim-cursorline'.buf_leave()")
+augroup END
 
-let &cpo = s:save_cpo
-unlet s:save_cpo
+let &cpoptions = s:save_cpoptions
+unlet s:save_cpoptions
