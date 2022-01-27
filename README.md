@@ -17,7 +17,8 @@ To lower the time it takes to make the cursorline appear, set `vim.g.cursorline_
 
 To disable the cursorline set `vim.g.cursorline_highlight` (lua) `g:cursorline_highlight` (vimscript) to `false`.
 
-To disable the cursorline or cursorword on certain filetypes or buffers set `vim.g.cursorline_disabled_filetypes`, `vim.g.cursorline_disabled_buftypes`, `vim.g.cursorword_diesabled_filetypes`, `vim.g.cursorword_diesabled_buftypes` (lua) `g:cursorline_disabled_filetypes`, `g:cursorline_disabled_buftypes`, `g: cursorword_diesabled_filetypes`, `g:cursorword_diesabled_buftypes` (vimscript) as tables (for multiple filetypes/buftypes) or strings (for single filetype/buftype).
+To disable the cursorline or cursorword on certain filetypes or buffers set `vim.g.cursorline_disabled_filetypes`, `vim.g.cursorline_disabled_buftypes`, `vim.g.cursorword_disabled_filetypes`, `vim.g.cursorword_diesabled_buftypes` (lua) `g:cursorline_disabled_filetypes`, `g:cursorline_disabled_buftypes`, `g: cursorword_disabled_filetypes`, `g:cursorword_diesabled_buftypes` (vimscript) as tables (for multiple filetypes/buftypes) or strings (for single filetype/buftype).
+In example, setting `vim.g.cursorline_disabled_filetypes = {"NvimTree"}` (lua) `let g:cursorline_disabled_filetypes = ["NvimTree"]` (vimscript) disables the cursorline for the [nvim-tree](https://github.com/kyazdani42/nvim-tree.lua).
 
 ## Acknowledgments
 Thanks goes to these people/projects for inspiration:
