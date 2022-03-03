@@ -4,7 +4,7 @@ local w = vim.w
 local wo = vim.wo
 local fn = vim.fn
 local api = vim.api
-local hi = api.nvim_set_hl
+local hl = api.nvim_set_hl
 local autocmd = api.nvim_create_autocmd
 local timer = vim.loop.new_timer()
 
@@ -77,7 +77,7 @@ function M.setup(options)
   if M.options.cursorword.enable then
     autocmd("VimEnter", {
       callback = function()
-        hi(0, "CursorWord", { underline = true })
+        hl(0, "CursorWord", { underline = true })
         matchadd()
       end,
     })
