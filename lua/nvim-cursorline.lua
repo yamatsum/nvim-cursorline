@@ -12,6 +12,7 @@ local DEFAULT_OPTIONS = {
   cursorline = {
     enable = true,
     timeout = 1000,
+    number = false,
   },
   cursorword = {
     enable = true,
@@ -63,12 +64,20 @@ function M.setup(options)
     })
     au({ "CursorMoved", "CursorMovedI" }, {
       callback = function()
-        wo.cursorlineopt = "number"
+        if M.options.cursorline.number then
+          wo.cursorline = false
+        else
+          wo.cursorlineopt = "number"
+        end
         timer:start(
           M.options.cursorline.timeout,
           0,
           vim.schedule_wrap(function()
-            wo.cursorlineopt = "both"
+            if M.options.cursorline.number then
+              wo.cursorline = true
+            else
+              wo.cursorlineopt = "both"
+            end
           end)
         )
       end,
