@@ -5,7 +5,7 @@ local wo = vim.wo
 local fn = vim.fn
 local api = vim.api
 local hl = api.nvim_set_hl
-local autocmd = api.nvim_create_autocmd
+local au = api.nvim_create_autocmd
 local timer = vim.loop.new_timer()
 
 local DEFAULT_OPTIONS = {
@@ -50,17 +50,17 @@ function M.setup(options)
 
   if M.options.cursorline.enable then
     wo.cursorline = true
-    autocmd("WinEnter", {
+    au("WinEnter", {
       callback = function()
         wo.cursorline = true
       end,
     })
-    autocmd("WinLeave", {
+    au("WinLeave", {
       callback = function()
         wo.cursorline = false
       end,
     })
-    autocmd({ "CursorMoved", "CursorMovedI" }, {
+    au({ "CursorMoved", "CursorMovedI" }, {
       callback = function()
         wo.cursorlineopt = "number"
         timer:start(
@@ -75,13 +75,13 @@ function M.setup(options)
   end
 
   if M.options.cursorword.enable then
-    autocmd("VimEnter", {
+    au("VimEnter", {
       callback = function()
         hl(0, "CursorWord", { underline = true })
         matchadd()
       end,
     })
-    autocmd({ "CursorMoved", "CursorMovedI" }, {
+    au({ "CursorMoved", "CursorMovedI" }, {
       callback = function()
         matchadd()
       end,
