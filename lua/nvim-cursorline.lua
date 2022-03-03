@@ -1,11 +1,11 @@
 local M = {}
 
 local w = vim.w
+local a = vim.api
 local wo = vim.wo
 local fn = vim.fn
-local api = vim.api
-local hl = api.nvim_set_hl
-local au = api.nvim_create_autocmd
+local hl = a.nvim_set_hl
+local au = a.nvim_create_autocmd
 local timer = vim.loop.new_timer()
 
 local DEFAULT_OPTIONS = {
@@ -20,8 +20,8 @@ local DEFAULT_OPTIONS = {
 }
 
 local function matchadd()
-  local column = api.nvim_win_get_cursor(0)[2]
-  local line = api.nvim_get_current_line()
+  local column = a.nvim_win_get_cursor(0)[2]
+  local line = a.nvim_get_current_line()
   local cursorword = fn.matchstr(line:sub(1, column + 1), [[\k*$]])
     .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
