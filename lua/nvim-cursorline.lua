@@ -16,6 +16,7 @@ local DEFAULT_OPTIONS = {
   cursorword = {
     enable = true,
     min_length = 3,
+    hl = { underline = true },
   },
 }
 
@@ -77,7 +78,7 @@ function M.setup(options)
   if M.options.cursorword.enable then
     au("VimEnter", {
       callback = function()
-        hl(0, "CursorWord", { underline = true })
+        hl(0, "CursorWord", M.options.cursorword.hl)
         matchadd()
       end,
     })
