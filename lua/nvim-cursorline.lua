@@ -1,46 +1,29 @@
 local M = {}
 
-local DISABLED = 0
-local CURSOR = 1
-local WINDOW = 2
-local status = CURSOR
+local w = vim.w
+local a = vim.api
+local wo = vim.wo
+local fn = vim.fn
+local hl = a.nvim_set_hl
+local au = a.nvim_create_autocmd
 local timer = vim.loop.new_timer()
 
-local w = vim.w
-local o = vim.o
-local g = vim.g
-local fn = vim.fn
-local api = vim.api
+local DEFAULT_OPTIONS = {
+  cursorline = {
+    enable = true,
+    timeout = 1000,
+    number = false,
+  },
+  cursorword = {
+    enable = true,
+    min_length = 3,
+    hl = { underline = true },
+  },
+}
 
-local cursorline_timeout = g.cursorline_timeout and g.cursorline_timeout or 1000
-
-o.cursorline = true
-
-local function return_highlight_term(group, term)
-  local output = api.nvim_exec("highlight " .. group, true)
-  local hi = fn.matchstr(output, term .. [[=\zs\S*]])
-  if hi == nil or hi == "" then
-    return "None"
-  else
-    return hi
-  end
-end
-
-local normal_bg = return_highlight_term("Normal", "guibg")
-local cursorline_bg = return_highlight_term("CursorLine", "guibg")
-
-function M.highlight_cursorword()
-  if g.cursorword_highlight ~= false then
-    vim.cmd("highlight CursorWord term=underline cterm=underline gui=underline")
-  end
-end
-
-function M.matchadd()
-  if fn.hlexists("CursorWord") == 0 then
-    return
-  end
-  local column = api.nvim_win_get_cursor(0)[2]
-  local line = api.nvim_get_current_line()
+local function matchadd()
+  local column = a.nvim_win_get_cursor(0)[2]
+  local line = a.nvim_get_current_line()
   local cursorword = fn.matchstr(line:sub(1, column + 1), [[\k*$]])
     .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
@@ -48,54 +31,74 @@ function M.matchadd()
     return
   end
   w.cursorword = cursorword
-  if w.cursorword_match == 1 then
+  if w.cursorword_id then
     vim.call("matchdelete", w.cursorword_id)
+    w.cursorword_id = nil
   end
-  w.cursorword_match = 0
-  if cursorword == "" or #cursorword > 100 or #cursorword < 3 or string.find(cursorword, "[\192-\255]+") ~= nil then
+  if
+    cursorword == ""
+    or #cursorword > 100
+    or #cursorword < M.options.cursorword.min_length
+    or string.find(cursorword, "[\192-\255]+") ~= nil
+  then
     return
   end
   local pattern = [[\<]] .. cursorword .. [[\>]]
   w.cursorword_id = fn.matchadd("CursorWord", pattern, -1)
-  w.cursorword_match = 1
 end
 
-function M.cursor_moved()
-  M.matchadd()
-  if status == WINDOW then
-    status = CURSOR
-    return
+function M.setup(options)
+  M.options = vim.tbl_deep_extend("force", DEFAULT_OPTIONS, options or {})
+
+  if M.options.cursorline.enable then
+    wo.cursorline = true
+    au("WinEnter", {
+      callback = function()
+        wo.cursorline = true
+      end,
+    })
+    au("WinLeave", {
+      callback = function()
+        wo.cursorline = false
+      end,
+    })
+    au({ "CursorMoved", "CursorMovedI" }, {
+      callback = function()
+        if M.options.cursorline.number then
+          wo.cursorline = false
+        else
+          wo.cursorlineopt = "number"
+        end
+        timer:start(
+          M.options.cursorline.timeout,
+          0,
+          vim.schedule_wrap(function()
+            if M.options.cursorline.number then
+              wo.cursorline = true
+            else
+              wo.cursorlineopt = "both"
+            end
+          end)
+        )
+      end,
+    })
   end
-  M.timer_start()
-  if status == CURSOR and cursorline_timeout ~= 0 then
-    -- disable cursorline
-    vim.cmd("highlight! CursorLine guibg=" .. normal_bg)
-    vim.cmd("highlight! CursorLineNr guibg=" .. normal_bg)
-    status = DISABLED
+
+  if M.options.cursorword.enable then
+    au("VimEnter", {
+      callback = function()
+        hl(0, "CursorWord", M.options.cursorword.hl)
+        matchadd()
+      end,
+    })
+    au({ "CursorMoved", "CursorMovedI" }, {
+      callback = function()
+        matchadd()
+      end,
+    })
   end
 end
 
-function M.win_enter()
-  o.cursorline = true
-  status = WINDOW
-end
-
-function M.win_leave()
-  o.cursorline = false
-  status = WINDOW
-end
-
-function M.timer_start()
-  timer:start(
-    cursorline_timeout,
-    0,
-    vim.schedule_wrap(function()
-      -- enable cursorline
-      vim.cmd("highlight! CursorLine guibg=" .. cursorline_bg)
-      vim.cmd("highlight! CursorLineNr guibg=" .. cursorline_bg)
-      status = CURSOR
-    end)
-  )
-end
+M.options = nil
 
 return M
