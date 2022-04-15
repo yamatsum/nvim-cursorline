@@ -3,9 +3,12 @@
 Highlight words and lines on the cursor for Neovim
 
 - Underlines the word under the cursor.
+
+https://user-images.githubusercontent.com/42740055/163586251-15c7c709-86bd-4c17-a298-07681bada220.mp4
+
 - Show / hide cursorline in connection with cursor moving.
 
-![demo](https://user-images.githubusercontent.com/42740055/102508634-f4d26c80-40c8-11eb-90af-142a7a63837d.gif)
+https://user-images.githubusercontent.com/42740055/163586272-17560f83-9195-4cb4-8c1c-557cfaf775ea.mp4
 
 ## Installation
 
