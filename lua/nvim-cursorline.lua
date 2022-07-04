@@ -6,6 +6,7 @@ local wo = vim.wo
 local fn = vim.fn
 local hl = a.nvim_set_hl
 local au = a.nvim_create_autocmd
+local ag = a.nvim_create_augroup
 local timer = vim.loop.new_timer()
 
 local DEFAULT_OPTIONS = {
@@ -58,19 +59,23 @@ function M.setup(options)
     disabled_filetype_lookup[ft] = true
   end
 
+  local group_id = ag('nvim-cursorline', { clear = true })
   if M.options.cursorline.enable then
     wo.cursorline = true
     au("WinEnter", {
+      group = group_id,
       callback = function()
         wo.cursorline = true
       end,
     })
     au("WinLeave", {
+      group = group_id,
       callback = function()
         wo.cursorline = false
       end,
     })
     au({ "CursorMoved", "CursorMovedI" }, {
+      group = group_id,
       callback = function()
         if disabled_filetype_lookup[vim.bo.filetype] then
           return
@@ -94,9 +99,11 @@ function M.setup(options)
       end,
     })
     au("BufEnter", {
+      group = group_id,
       callback = function()
         if disabled_filetype_lookup[vim.bo.filetype] then
           wo.cursorline = true
+          wo.cursorlineopt = "both"
         end
       end
     })
@@ -104,12 +111,14 @@ function M.setup(options)
 
   if M.options.cursorword.enable then
     au("VimEnter", {
+      group = group_id,
       callback = function()
         hl(0, "CursorWord", M.options.cursorword.hl)
         matchadd()
       end,
     })
     au({ "CursorMoved", "CursorMovedI" }, {
+      group = group_id,
       callback = function()
         matchadd()
       end,
