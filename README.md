@@ -22,6 +22,9 @@ require('nvim-cursorline').setup {
     enable = true,
     timeout = 1000,
     number = false,
+    disable_filetypes = {
+      'neo-tree'
+    },
   },
   cursorword = {
     enable = true,

@@ -13,6 +13,9 @@ local DEFAULT_OPTIONS = {
     enable = true,
     timeout = 1000,
     number = false,
+    disable_filetypes = {
+      'neo-tree'
+    },
   },
   cursorword = {
     enable = true,
@@ -50,6 +53,11 @@ end
 function M.setup(options)
   M.options = vim.tbl_deep_extend("force", DEFAULT_OPTIONS, options or {})
 
+  local disabled_filetype_lookup = {}
+  for _, ft in ipairs(M.options.cursorline.disable_filetypes) do
+    disabled_filetype_lookup[ft] = true
+  end
+
   if M.options.cursorline.enable then
     wo.cursorline = true
     au("WinEnter", {
@@ -64,6 +72,10 @@ function M.setup(options)
     })
     au({ "CursorMoved", "CursorMovedI" }, {
       callback = function()
+        if disabled_filetype_lookup[vim.bo.filetype] then
+          vim.wo.cursorline = true
+          return
+        end
         if M.options.cursorline.number then
           wo.cursorline = false
         else
