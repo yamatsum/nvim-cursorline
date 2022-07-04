@@ -73,7 +73,6 @@ function M.setup(options)
     au({ "CursorMoved", "CursorMovedI" }, {
       callback = function()
         if disabled_filetype_lookup[vim.bo.filetype] then
-          vim.wo.cursorline = true
           return
         end
         if M.options.cursorline.number then
@@ -93,6 +92,13 @@ function M.setup(options)
           end)
         )
       end,
+    })
+    au("BufEnter", {
+      callback = function()
+        if disabled_filetype_lookup[vim.bo.filetype] then
+          wo.cursorline = true
+        end
+      end
     })
   end
 
