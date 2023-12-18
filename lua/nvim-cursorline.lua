@@ -40,6 +40,7 @@ local function matchadd()
   end
   if
     cursorword == ""
+    or cursorword == "~"
     or #cursorword > 100
     or #cursorword < M.options.cursorword.min_length
     or string.find(cursorword, "[\192-\255]+") ~= nil
