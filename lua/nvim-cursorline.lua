@@ -24,6 +24,9 @@ local DEFAULT_OPTIONS = {
 local function matchadd()
   local column = a.nvim_win_get_cursor(0)[2]
   local line = a.nvim_get_current_line()
+  if fn.type(line) == vim.v.t_blob then
+    return
+  end
   local cursorword = fn.matchstr(line:sub(1, column + 1), [[\k*$]])
     .. fn.matchstr(line:sub(column + 1), [[^\k*]]):sub(2)
 
@@ -37,6 +40,7 @@ local function matchadd()
   end
   if
     cursorword == ""
+    or cursorword == "~"
     or #cursorword > 100
     or #cursorword < M.options.cursorword.min_length
     or string.find(cursorword, "[\192-\255]+") ~= nil
