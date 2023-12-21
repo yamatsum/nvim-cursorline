@@ -31,8 +31,8 @@ local function matchadd()
     return
   end
   w.cursorword = cursorword
-  if w.cursorword_id then
-    vim.call("matchdelete", w.cursorword_id)
+  _, ok = pcall(vim.call, "matchdelete", w.cursorword_id)
+  if not ok then
     w.cursorword_id = nil
   end
   if
